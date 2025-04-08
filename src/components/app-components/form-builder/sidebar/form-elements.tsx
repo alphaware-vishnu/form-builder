@@ -19,7 +19,7 @@ export const FormElements = () => {
             {
                 formElements.map((element) => {
                     return (
-                        <div className=' flex  flex-col '>
+                        <div key={element.category} className=' flex  flex-col '>
                             <p className='capitalize text-gray-600 text-sm'>{element.category}</p>
                             <div className='grid grid-cols-2 gap-4 my-3 '>
                                 <FormElement elements={element.elements} />

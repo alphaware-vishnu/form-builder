@@ -16,21 +16,51 @@ export const FormBuilderProvider = ({ children }: PropsWithChildren) => {
     setSelectedField(field);
   };
 
-  console.log("selected", selectedField);
 
-  const updateField = ()=>{
-    const field = selectField
+  const updateField = (id: string, fieldData: FormField) => {
+
+    const updatedData = formFields.map(field => {
+      return field.id === id ? { ...field, name: fieldData.name, label: field.label, placeholder: fieldData.placeholder } : field
+    })
+
+    setFormFields(updatedData)
+
   }
 
   const addField = (uid: UniqueIdentifier) => {
     const id = nanoid();
+    let type: FieldType;
+
+    switch (uid) {
+      case "date":
+        type = "date"
+        break;
+      case "datetime":
+        type = "datetime-local"
+        break;
+      case "password":
+        type = "password"
+        break;
+        break;
+      case "phone":
+        type = "number"
+        break;
+      case "number":
+        type = "number"
+        break;
+      case "email":
+        type = "email"
+        break;
+      default:
+        type = "text"
+    }
+
     const baseField: FormField = {
       id,
       uid,
-      type: "text",
-      label: `${
-        uid.toString().charAt(0).toUpperCase() + uid.toString().slice(1)
-      } `,
+      type,
+      label: `${uid.toString().charAt(0).toUpperCase() + uid.toString().slice(1)
+        } `,
       name: `${uid}_${id}`,
       validations: {
         required: false,
@@ -69,7 +99,8 @@ export const FormBuilderProvider = ({ children }: PropsWithChildren) => {
     formFields,
     selectField,
     selectedField,
-    removeField
+    removeField,
+    updateField
   };
 
   return <FormBuilderContext value={values}>{children}</FormBuilderContext>;

@@ -19,6 +19,7 @@ export const Canvas = () => {
   const formBuilderContext = useFormProvider();
 
   const renderItem = (item: FormField) => {
+    console.log('item', item)
     let element;
     switch (item.uid) {
       case "single-line":

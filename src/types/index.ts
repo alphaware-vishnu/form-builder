@@ -1,8 +1,19 @@
-export type FieldType = "text" | "email" | "number" | "select" | "radio" | "checkbox";
+import { UniqueIdentifier } from "@dnd-kit/core";
+
+export type FieldType =
+  | "text"
+  | "email"
+  | "number"
+  | "select"
+  | "radio"
+  | "checkbox"
+  | "date"
+  | "datetime-local"
+  | "password";
 
 export type FormField = {
-    id:string
-  uid: string;
+  id: string;
+  uid: UniqueIdentifier;
   type: FieldType;
   label: string;
   name: string;
@@ -18,5 +29,5 @@ export type FormField = {
     operator: "equals" | "not_equals";
     value: any;
   }[];
-  options?: string[]; 
+  options?: string[];
 };
