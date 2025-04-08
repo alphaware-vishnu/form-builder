@@ -4,6 +4,13 @@ import { cn } from "@/lib/utils";
 import { useFormProvider } from "@/providers";
 import { FormField } from "@/types";
 import { useDroppable } from "@dnd-kit/core";
+import {CSS} from '@dnd-kit/utilities'
+import {
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+  horizontalListSortingStrategy
+} from "@dnd-kit/sortable";
 import {
   GripVertical,
   PlusIcon,
@@ -19,7 +26,6 @@ export const Canvas = () => {
   const formBuilderContext = useFormProvider();
 
   const renderItem = (item: FormField) => {
-    console.log('item', item)
     let element;
     switch (item.uid) {
       case "single-line":
@@ -40,7 +46,7 @@ export const Canvas = () => {
         element = (
           <FieldWrapper id={item.id}>
             <div className="w-full ">
-              <p className="text-sm text-gray-600">{item.label}</p>
+              <p className="text-sm text-gray-600">{item.label} <span className="text-red-500">{item.validations?.required ? "*" : ""}</span></p>
               <input
                 placeholder={item.placeholder}
                 type={item.type}
@@ -54,7 +60,7 @@ export const Canvas = () => {
         element = (
           <FieldWrapper id={item.id}>
             <div className="w-full ">
-              <p className="text-sm text-gray-600">{item.label}</p>
+              <p className="text-sm text-gray-600">{item.label} <span className="text-red-500">{item.validations?.required ? "*" : ""}</span></p>
               <input
                 placeholder={item.placeholder}
                 type={item.type}
@@ -68,7 +74,7 @@ export const Canvas = () => {
         element = (
           <FieldWrapper id={item.id}>
             <div className="w-full ">
-              <p className="text-sm text-gray-600">{item.label}</p>
+              <p className="text-sm text-gray-600">{item.label} <span className="text-red-500">{item.validations?.required ? "*" : ""}</span></p>
               <input
                 placeholder={item.placeholder}
                 type={item.type}
@@ -82,7 +88,7 @@ export const Canvas = () => {
         element = (
           <FieldWrapper id={item.id}>
             <div className="w-full ">
-              <p className="text-sm text-gray-600">{item.label}</p>
+              <p className="text-sm text-gray-600">{item.label} <span className="text-red-500">{item.validations?.required ? "*" : ""}</span></p>
               <input
                 placeholder={item.placeholder}
                 type={item.type}
@@ -96,7 +102,7 @@ export const Canvas = () => {
         element = (
           <FieldWrapper id={item.id}>
             <div className="w-full ">
-              <p className="text-sm text-gray-600">{item.label}</p>
+              <p className="text-sm text-gray-600">{item.label} <span className="text-red-500">{item.validations?.required ? "*" : ""}</span></p>
               <input
                 placeholder={item.placeholder}
                 type={item.type}
@@ -110,7 +116,7 @@ export const Canvas = () => {
         element = (
           <FieldWrapper id={item.id}>
             <div className="w-full ">
-              <p className="text-sm text-gray-600">{item.label}</p>
+              <p className="text-sm text-gray-600">{item.label} <span className="text-red-500">{item.validations?.required ? "*" : ""}</span></p>
               <input
                 placeholder={item.placeholder}
                 type={item.type}
@@ -124,7 +130,7 @@ export const Canvas = () => {
         element = (
           <FieldWrapper id={item.id}>
             <div className="w-full ">
-              <p className="text-sm text-gray-600">{item.label}</p>
+              <p className="text-sm text-gray-600">{item.label} <span className="text-red-500">{item.validations?.required ? "*" : ""}</span></p>
               <input
                 placeholder={item.placeholder}
                 type={item.type}
@@ -138,7 +144,7 @@ export const Canvas = () => {
         element = (
           <FieldWrapper className="col-span-2" id={item.id}>
             <div className="w-full ">
-              <p className="text-sm text-gray-600">{item.label}</p>
+              <p className="text-sm text-gray-600">{item.label} <span className="text-red-500">{item.validations?.required ? "*" : ""}</span></p>
               <textarea
                 className="border w-full text-gray-600 rounded-md p-2"
                 rows={3}
@@ -151,7 +157,7 @@ export const Canvas = () => {
         element = (
           <FieldWrapper id={item.id}>
             <div className="w-full ">
-              <p className="text-sm text-gray-600">{item.label}</p>
+              <p className="text-sm text-gray-600">{item.label} <span className="text-red-500">{item.validations?.required ? "*" : ""}</span></p>
               <input
                 placeholder={item.placeholder}
                 type={item.type}
@@ -165,7 +171,7 @@ export const Canvas = () => {
         element = (
           <FieldWrapper id={item.id}>
             <div className="w-full ">
-              <p className="text-sm text-gray-600">{item.label}</p>
+              <p className="text-sm text-gray-600">{item.label} <span className="text-red-500">{item.validations?.required ? "*" : ""}</span></p>
               <input
                 placeholder={item.placeholder}
                 type={item.type}
@@ -179,7 +185,7 @@ export const Canvas = () => {
         element = (
           <FieldWrapper id={item.id}>
             <div className="w-full ">
-              <p className="text-sm text-gray-600">{item.label}</p>
+              <p className="text-sm text-gray-600">{item.label} <span className="text-red-500">{item.validations?.required ? "*" : ""}</span></p>
               <input
                 placeholder={item.placeholder}
                 type={item.type}
@@ -206,7 +212,7 @@ export const Canvas = () => {
       ref={setNodeRef}
       className=" min-h-[80%] relative p-2 m-4 rounded-md"
     >
-      <div className="sticky flex items-center shadow justify-between gap-2 top-6 p-2 w-full rounded-md bg-white border">
+      <div className="sticky z-50 flex items-center shadow justify-between gap-2 top-6 p-2 w-full rounded-md bg-white border">
         <Button
           className="cursor-pointer font-normal"
           variant={"ghost"}
@@ -265,10 +271,17 @@ export const Canvas = () => {
             "grid grid-cols-2 gap-5"
           )}
         >
-          {formBuilderContext.formFields &&
-            formBuilderContext.formFields.map((field: FormField) =>
-              renderItem(field)
+          <SortableContext
+            strategy={horizontalListSortingStrategy}
+            items={formBuilderContext?.formFields?.map?.(
+              (formField) => formField.id
             )}
+          >
+            {formBuilderContext.formFields &&
+              formBuilderContext.formFields.map((field: FormField) =>
+                renderItem(field)
+              )}
+          </SortableContext>
         </div>
       ) : (
         <FallbackCanvas />
@@ -282,19 +295,31 @@ const FieldWrapper = ({
   id,
   className,
 }: PropsWithChildren<{ className?: string; id: string }>) => {
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id });
   const formBuilderContext = useFormProvider();
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
   return (
-    <div className={cn("w-full  border rounded-sm mt-2 p-2", className)}>
+    <div
+      ref={setNodeRef}
+      style={style}
+    
+      className={cn("w-full z-0  border rounded-sm mt-2 p-2", className)}
+    >
       <div className="flex items-center justify-between">
-        <GripVertical className="w-3 h-3 text-gray-600" />
+        <GripVertical    {...attributes}
+      {...listeners} className="w-3 cursor-grab h-3 text-gray-600" />
         <div className="flex items-center gap-x-2">
           <Settings2
             onClick={() => formBuilderContext.selectField(id)}
             className="w-7 hover:bg-gray-100 rounded-sm transition-all p-2  h-7 cursor-pointer text-gray-600"
           />
           <Trash
-            onClick={() => formBuilderContext.removeField(id)}
-            className="w-7 text-red-500 hover:bg-red-200 rounded-sm transition-all p-2  h-7 cursor-pointer"
+            onClick={(e) => e.preventDefault()>formBuilderContext.removeField(id)}
+            className="w-7 z-10 text-red-500 hover:bg-red-200 rounded-sm transition-all p-2  h-7 cursor-pointer"
           />
         </div>
       </div>

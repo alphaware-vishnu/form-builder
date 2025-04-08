@@ -3,18 +3,36 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import { DndContext, DragOverlay } from "@dnd-kit/core";
+import {
+  DndContext,
+  DragOverlay,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
 import { ElementsSidebar } from "./sidebar/elements-sidebar";
 import { Canvas } from "./canvas/canvas";
 import { useFormProvider } from "@/providers";
-import {  UserCircle } from "lucide-react";
+import { UserCircle } from "lucide-react";
 import { FieldSetting } from "./field-settings/field-settings";
+import {
+  sortableKeyboardCoordinates,
+} from "@dnd-kit/sortable";
 
 export const FormBuilder = () => {
   const formBuilderContext = useFormProvider();
-
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
   return (
     <DndContext
+      sensors={sensors}
+      collisionDetection={closestCenter}
       onDragStart={(e) => formBuilderContext.handleDragStart?.(e)}
       onDragEnd={(e) => formBuilderContext.handleDragEnd?.(e)}
     >
@@ -56,7 +74,7 @@ export const FormBuilder = () => {
               <div className="">
                 <FieldSetting />
               </div>
-              
+
               {/* Add more content here to test scroll */}
             </div>
           </ResizablePanel>

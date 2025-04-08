@@ -1,5 +1,7 @@
 import { FieldType, FormField } from "@/types";
 import { DragEndEvent, DragStartEvent, UniqueIdentifier } from "@dnd-kit/core";
+import { arrayMove } from "@dnd-kit/sortable";
+
 import { createContext, PropsWithChildren, useContext, useState } from "react";
 import { nanoid } from "nanoid";
 const FormBuilderContext = createContext<any>(null);
@@ -16,16 +18,21 @@ export const FormBuilderProvider = ({ children }: PropsWithChildren) => {
     setSelectedField(field);
   };
 
-
   const updateField = (id: string, fieldData: FormField) => {
+    const updatedData = formFields.map((field) => {
+      return field.id === id
+        ? {
+            ...field,
+            name: fieldData.name,
+            label: fieldData.label,
+            placeholder: fieldData.placeholder,
+            validations: fieldData.validations
+          }
+        : field;
+    });
 
-    const updatedData = formFields.map(field => {
-      return field.id === id ? { ...field, name: fieldData.name, label: field.label, placeholder: fieldData.placeholder } : field
-    })
-
-    setFormFields(updatedData)
-
-  }
+    setFormFields(updatedData);
+  };
 
   const addField = (uid: UniqueIdentifier) => {
     const id = nanoid();
@@ -33,34 +40,35 @@ export const FormBuilderProvider = ({ children }: PropsWithChildren) => {
 
     switch (uid) {
       case "date":
-        type = "date"
+        type = "date";
         break;
       case "datetime":
-        type = "datetime-local"
+        type = "datetime-local";
         break;
       case "password":
-        type = "password"
+        type = "password";
         break;
         break;
       case "phone":
-        type = "number"
+        type = "number";
         break;
       case "number":
-        type = "number"
+        type = "number";
         break;
       case "email":
-        type = "email"
+        type = "email";
         break;
       default:
-        type = "text"
+        type = "text";
     }
 
     const baseField: FormField = {
       id,
       uid,
       type,
-      label: `${uid.toString().charAt(0).toUpperCase() + uid.toString().slice(1)
-        } `,
+      label: `${
+        uid.toString().charAt(0).toUpperCase() + uid.toString().slice(1)
+      } `,
       name: `${uid}_${id}`,
       validations: {
         required: false,
@@ -81,6 +89,13 @@ export const FormBuilderProvider = ({ children }: PropsWithChildren) => {
       setFields((preVal) => [...preVal, active.id]);
       addField(active.id);
     }
+    if (active?.id !== over?.id) {
+      setFormFields((items) => {
+        const oldIndex = items.findIndex((items) => items.id === active.id);
+        const newIndex = items.findIndex((items) => items.id === over?.id);
+        return arrayMove(items, oldIndex, newIndex);
+      });
+    }
   };
 
   const handleDragStart = (e: DragStartEvent) => {
@@ -100,7 +115,7 @@ export const FormBuilderProvider = ({ children }: PropsWithChildren) => {
     selectField,
     selectedField,
     removeField,
-    updateField
+    updateField,
   };
 
   return <FormBuilderContext value={values}>{children}</FormBuilderContext>;
