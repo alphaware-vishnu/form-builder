@@ -22,7 +22,7 @@ export type FormField = {
     required?: boolean;
     minLength?: number;
     maxLength?: number;
-    pattern?: string;
+    pattern?: any;
   };
   conditions?: {
     field: string;

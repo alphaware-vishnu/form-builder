@@ -4,12 +4,12 @@ import { cn } from "@/lib/utils";
 import { useFormProvider } from "@/providers";
 import { FormField } from "@/types";
 import { useDroppable } from "@dnd-kit/core";
-import {CSS} from '@dnd-kit/utilities'
+import { CSS } from "@dnd-kit/utilities";
 import {
   SortableContext,
   useSortable,
   verticalListSortingStrategy,
-  horizontalListSortingStrategy
+  horizontalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import {
   GripVertical,
@@ -20,20 +20,37 @@ import {
   Trash,
 } from "lucide-react";
 import { PropsWithChildren } from "react";
+import { useFormik } from "formik";
+import { generateValidationSchema } from "@/utils";
 
 export const Canvas = () => {
   const { setNodeRef, isOver } = useDroppable({ id: "canvas" });
   const formBuilderContext = useFormProvider();
+  const validationSchema = generateValidationSchema(
+    formBuilderContext?.formFields
+  );
 
+  console.log(validationSchema, "validation schema");
+  const formik = useFormik({
+    initialValues: {},
+    validationSchema,
+    onSubmit: (values) => {},
+  });
+  console.log("formik.errors", formik.errors);
+  console.log("formik.values", formik.values);
   const renderItem = (item: FormField) => {
     let element;
     switch (item.uid) {
-      case "single-line":
+      case "singleline":
         element = (
           <FieldWrapper id={item.id}>
             <div className="w-full ">
               <p className="text-sm text-gray-600">{item.label}</p>
               <input
+                name={item.name}
+                onBlur={formik.handleBlur}
+                value={formik.values[item.name]}
+                onChange={formik.handleChange}
                 placeholder={item.placeholder}
                 type={item.type}
                 className="p-2 w-full text-sm text-gray-600 border rounded-md "
@@ -46,11 +63,24 @@ export const Canvas = () => {
         element = (
           <FieldWrapper id={item.id}>
             <div className="w-full ">
-              <p className="text-sm text-gray-600">{item.label} <span className="text-red-500">{item.validations?.required ? "*" : ""}</span></p>
+              <p className="text-sm text-gray-600">
+                {item.label}{" "}
+                <span className="text-red-500">
+                  {item.validations?.required ? "*" : ""}
+                </span>
+              </p>
               <input
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                name={item.name}
+                value={formik.values[item.name]}
                 placeholder={item.placeholder}
                 type={item.type}
                 className="p-2 w-full text-sm text-gray-600 border rounded-md "
+              />
+              <Error
+                error={formik.errors[item.name]}
+                isTouched={formik.touched[item.name]}
               />
             </div>
           </FieldWrapper>
@@ -60,7 +90,12 @@ export const Canvas = () => {
         element = (
           <FieldWrapper id={item.id}>
             <div className="w-full ">
-              <p className="text-sm text-gray-600">{item.label} <span className="text-red-500">{item.validations?.required ? "*" : ""}</span></p>
+              <p className="text-sm text-gray-600">
+                {item.label}{" "}
+                <span className="text-red-500">
+                  {item.validations?.required ? "*" : ""}
+                </span>
+              </p>
               <input
                 placeholder={item.placeholder}
                 type={item.type}
@@ -74,7 +109,12 @@ export const Canvas = () => {
         element = (
           <FieldWrapper id={item.id}>
             <div className="w-full ">
-              <p className="text-sm text-gray-600">{item.label} <span className="text-red-500">{item.validations?.required ? "*" : ""}</span></p>
+              <p className="text-sm text-gray-600">
+                {item.label}{" "}
+                <span className="text-red-500">
+                  {item.validations?.required ? "*" : ""}
+                </span>
+              </p>
               <input
                 placeholder={item.placeholder}
                 type={item.type}
@@ -88,7 +128,12 @@ export const Canvas = () => {
         element = (
           <FieldWrapper id={item.id}>
             <div className="w-full ">
-              <p className="text-sm text-gray-600">{item.label} <span className="text-red-500">{item.validations?.required ? "*" : ""}</span></p>
+              <p className="text-sm text-gray-600">
+                {item.label}{" "}
+                <span className="text-red-500">
+                  {item.validations?.required ? "*" : ""}
+                </span>
+              </p>
               <input
                 placeholder={item.placeholder}
                 type={item.type}
@@ -98,11 +143,16 @@ export const Canvas = () => {
           </FieldWrapper>
         );
         break;
-      case "single-line":
+      case "singleline":
         element = (
           <FieldWrapper id={item.id}>
             <div className="w-full ">
-              <p className="text-sm text-gray-600">{item.label} <span className="text-red-500">{item.validations?.required ? "*" : ""}</span></p>
+              <p className="text-sm text-gray-600">
+                {item.label}{" "}
+                <span className="text-red-500">
+                  {item.validations?.required ? "*" : ""}
+                </span>
+              </p>
               <input
                 placeholder={item.placeholder}
                 type={item.type}
@@ -116,7 +166,12 @@ export const Canvas = () => {
         element = (
           <FieldWrapper id={item.id}>
             <div className="w-full ">
-              <p className="text-sm text-gray-600">{item.label} <span className="text-red-500">{item.validations?.required ? "*" : ""}</span></p>
+              <p className="text-sm text-gray-600">
+                {item.label}{" "}
+                <span className="text-red-500">
+                  {item.validations?.required ? "*" : ""}
+                </span>
+              </p>
               <input
                 placeholder={item.placeholder}
                 type={item.type}
@@ -130,7 +185,12 @@ export const Canvas = () => {
         element = (
           <FieldWrapper id={item.id}>
             <div className="w-full ">
-              <p className="text-sm text-gray-600">{item.label} <span className="text-red-500">{item.validations?.required ? "*" : ""}</span></p>
+              <p className="text-sm text-gray-600">
+                {item.label}{" "}
+                <span className="text-red-500">
+                  {item.validations?.required ? "*" : ""}
+                </span>
+              </p>
               <input
                 placeholder={item.placeholder}
                 type={item.type}
@@ -144,7 +204,12 @@ export const Canvas = () => {
         element = (
           <FieldWrapper className="col-span-2" id={item.id}>
             <div className="w-full ">
-              <p className="text-sm text-gray-600">{item.label} <span className="text-red-500">{item.validations?.required ? "*" : ""}</span></p>
+              <p className="text-sm text-gray-600">
+                {item.label}{" "}
+                <span className="text-red-500">
+                  {item.validations?.required ? "*" : ""}
+                </span>
+              </p>
               <textarea
                 className="border w-full text-gray-600 rounded-md p-2"
                 rows={3}
@@ -157,7 +222,12 @@ export const Canvas = () => {
         element = (
           <FieldWrapper id={item.id}>
             <div className="w-full ">
-              <p className="text-sm text-gray-600">{item.label} <span className="text-red-500">{item.validations?.required ? "*" : ""}</span></p>
+              <p className="text-sm text-gray-600">
+                {item.label}{" "}
+                <span className="text-red-500">
+                  {item.validations?.required ? "*" : ""}
+                </span>
+              </p>
               <input
                 placeholder={item.placeholder}
                 type={item.type}
@@ -171,7 +241,12 @@ export const Canvas = () => {
         element = (
           <FieldWrapper id={item.id}>
             <div className="w-full ">
-              <p className="text-sm text-gray-600">{item.label} <span className="text-red-500">{item.validations?.required ? "*" : ""}</span></p>
+              <p className="text-sm text-gray-600">
+                {item.label}{" "}
+                <span className="text-red-500">
+                  {item.validations?.required ? "*" : ""}
+                </span>
+              </p>
               <input
                 placeholder={item.placeholder}
                 type={item.type}
@@ -185,7 +260,12 @@ export const Canvas = () => {
         element = (
           <FieldWrapper id={item.id}>
             <div className="w-full ">
-              <p className="text-sm text-gray-600">{item.label} <span className="text-red-500">{item.validations?.required ? "*" : ""}</span></p>
+              <p className="text-sm text-gray-600">
+                {item.label}{" "}
+                <span className="text-red-500">
+                  {item.validations?.required ? "*" : ""}
+                </span>
+              </p>
               <input
                 placeholder={item.placeholder}
                 type={item.type}
@@ -205,6 +285,8 @@ export const Canvas = () => {
 
     return element;
   };
+
+  formik.handleBlur;
 
   return (
     <div
@@ -263,7 +345,7 @@ export const Canvas = () => {
         />
       </div>
       {formBuilderContext.formFields.length ? (
-        <div
+        <form
           className={cn(
             isOver
               ? "bg-blue-50/10 border p-2 rounded-md h-[100%] gap-5 border-dashed border-blue-500"
@@ -274,7 +356,7 @@ export const Canvas = () => {
           <SortableContext
             strategy={horizontalListSortingStrategy}
             items={formBuilderContext?.formFields?.map?.(
-              (formField) => formField.id
+              (formField: FormField) => formField.id
             )}
           >
             {formBuilderContext.formFields &&
@@ -282,7 +364,7 @@ export const Canvas = () => {
                 renderItem(field)
               )}
           </SortableContext>
-        </div>
+        </form>
       ) : (
         <FallbackCanvas />
       )}
@@ -297,6 +379,7 @@ const FieldWrapper = ({
 }: PropsWithChildren<{ className?: string; id: string }>) => {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id });
+
   const formBuilderContext = useFormProvider();
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -306,19 +389,27 @@ const FieldWrapper = ({
     <div
       ref={setNodeRef}
       style={style}
-    
       className={cn("w-full z-0  border rounded-sm mt-2 p-2", className)}
     >
       <div className="flex items-center justify-between">
-        <GripVertical    {...attributes}
-      {...listeners} className="w-3 cursor-grab h-3 text-gray-600" />
+        <GripVertical
+          {...attributes}
+          {...listeners}
+          className="w-3 cursor-grab h-3 text-gray-600"
+        />
         <div className="flex items-center gap-x-2">
           <Settings2
             onClick={() => formBuilderContext.selectField(id)}
             className="w-7 hover:bg-gray-100 rounded-sm transition-all p-2  h-7 cursor-pointer text-gray-600"
           />
           <Trash
-            onClick={(e) => e.preventDefault()>formBuilderContext.removeField(id)}
+            onClick={(e) => {
+              e.preventDefault();
+              formBuilderContext.removeField(id);
+              if (id === formBuilderContext?.selectedField.id) {
+                formBuilderContext?.setSelectedField(null);
+              }
+            }}
             className="w-7 z-10 text-red-500 hover:bg-red-200 rounded-sm transition-all p-2  h-7 cursor-pointer"
           />
         </div>
@@ -346,4 +437,14 @@ export const FallbackCanvas = () => {
       </div>
     </div>
   );
+};
+
+export const Error = ({
+  isTouched,
+  error,
+}: {
+  isTouched: boolean;
+  error: string | undefined;
+}) => {
+  return <>{isTouched && error ? <p className="text-red-500 text-xs">{error}</p> : null}</>;
 };

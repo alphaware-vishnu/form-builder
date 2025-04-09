@@ -3,7 +3,6 @@ import { FormElements } from "./form-elements";
 import { memo } from "react";
 
 export const ElementsSidebarMemo = () => {
-  console.log("rendered sidebar");
   return (
     <div className="space-y-3 mt-3">
       <div className="rounded-md flex items-center w-full border shadow-sm pl-1">

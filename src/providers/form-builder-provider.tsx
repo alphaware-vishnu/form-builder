@@ -114,6 +114,7 @@ export const FormBuilderProvider = ({ children }: PropsWithChildren) => {
     formFields,
     selectField,
     selectedField,
+    setSelectedField,
     removeField,
     updateField,
   };

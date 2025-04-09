@@ -1,3 +1,4 @@
+import { FormField } from "@/types";
 import {
   BadgeCheck,
   Bird,
@@ -16,7 +17,7 @@ import {
   ToggleLeft,
   UserPlus,
 } from "lucide-react";
-
+import * as yup from "yup";
 export function iconRenderer(element: {
   label: string;
   type: string;
@@ -80,4 +81,82 @@ export function iconRenderer(element: {
       icon = Bird;
   }
   return icon;
+}
+
+export function generateValidationSchema(fields: FormField[]) {
+  const shape: Record<string, yup.AnySchema> = {};
+  fields.forEach((field) => {
+    shape[field.name] = generateSchemaForField(field);
+  });
+
+  return yup.object().shape(shape);
+}
+
+export function generateSchemaForField(field: FormField) {
+  const { type, label, validations = {} } = field;
+  let schema: yup.AnySchema;
+  switch (type) {
+    case "text":
+    case "password":
+    case "select":
+    case "radio":
+      schema = yup.string();
+      break;
+    case "number":
+      schema = yup.number();
+      break;
+    case "email":
+      schema = yup.string().email();
+      break;
+    case "checkbox":
+      schema = yup.boolean();
+      break;
+    case "date":
+      schema = yup.date();
+      break;
+    default:
+      schema = yup.string();
+  }
+
+  if (validations.required) {
+    schema = schema.required(`${label} is required`);
+  }
+
+  if (validations.minLength) {
+    if (type === "number") {
+      schema = (schema as yup.NumberSchema).min(
+        validations.minLength,
+        `${label} must be atleast ${validations.minLength}`
+      );
+    }
+    if (type === "text") {
+      schema = (schema as yup.StringSchema).min(
+        validations.minLength,
+        `${label} must be atleast ${validations.minLength} characters long`
+      );
+    }
+  }
+
+  if (validations.maxLength) {
+    if (type === "number") {
+      schema = (schema as yup.NumberSchema).min(
+        validations.maxLength,
+        `${label} must be atmost ${validations.maxLength}`
+      );
+    }
+    if (type === "text") {
+      schema = (schema as yup.StringSchema).min(
+        validations.maxLength,
+        `${label} must be atmost ${validations.maxLength} characters long`
+      );
+    }
+    if (validations.pattern) {
+      schema = (schema as yup.StringSchema).matches(
+        validations.pattern as RegExp,
+        `${label} is invalid`
+      );
+    }
+  }
+
+  return schema;
 }

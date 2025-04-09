@@ -4,21 +4,16 @@ import FallbackSection from "./fallback-section";
 import { CircleAlert } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
-import { ChangeEventHandler, useState } from "react";
+import { ChangeEventHandler } from "react";
 
 export const FieldSetting = () => {
   const formBuilderContext = useFormProvider();
   const selectedField: FormField = formBuilderContext.selectedField;
-  const [fieldMeta, setFieldMeta] = useState({
-    name: selectedField?.name,
-    placeholder: selectedField?.placeholder,
-    label: selectedField?.label,
-  });
+  
 
   const field = formBuilderContext.formFields.find(
-    (item) => item.id === selectedField?.id
+    (item:FormField) => item.id === selectedField?.id
   );
-
   const handleChange: ChangeEventHandler<HTMLInputElement> = (e) => {
     const fieldData = formBuilderContext.updateField(selectedField?.id, {
       name: e.target.value,
@@ -83,13 +78,13 @@ export const FieldSetting = () => {
               formBuilderContext.updateField(field.id, {
                 ...field,
                 validations: {
-                  ...field.validations,
+                  ...field?.validations,
                   required: checked,
                 },
               })
             }
             id="required"
-            checked={field.validations?.required}
+            checked={field?.validations?.required}
           />
           <label htmlFor="required" className="text-sm text-gray-600">
             Required
