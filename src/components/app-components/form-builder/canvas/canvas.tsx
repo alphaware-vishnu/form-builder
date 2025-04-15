@@ -31,21 +31,26 @@ export const Canvas = () => {
   );
 
   console.log(validationSchema, "validation schema");
-  const formik = useFormik({
+  const formik = useFormik<Record<string, string>>({
     initialValues: {},
     validationSchema,
     onSubmit: (values) => {},
   });
   console.log("formik.errors", formik.errors);
-  console.log("formik.values", formik.values);
   const renderItem = (item: FormField) => {
+    console.log("item", item);
     let element;
     switch (item.uid) {
       case "singleline":
         element = (
           <FieldWrapper id={item.id}>
             <div className="w-full ">
-              <p className="text-sm text-gray-600">{item.label}</p>
+              <p className="text-sm text-gray-600">
+                {item.label}{" "}
+                <span className="text-red-500">
+                  {item.validations?.required ? "*" : ""}
+                </span>
+              </p>
               <input
                 name={item.name}
                 onBlur={formik.handleBlur}
@@ -56,6 +61,10 @@ export const Canvas = () => {
                 className="p-2 w-full text-sm text-gray-600 border rounded-md "
               />
             </div>
+            <Error
+              error={formik.errors[item.name]}
+              isTouched={formik.touched[item.name]}
+            />
           </FieldWrapper>
         );
         break;
@@ -97,9 +106,17 @@ export const Canvas = () => {
                 </span>
               </p>
               <input
+                value={formik.values[item.name]}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
                 placeholder={item.placeholder}
+                name={item.name}
                 type={item.type}
                 className="p-2 w-full text-sm text-gray-600 border rounded-md "
+              />
+              <Error
+                error={formik.errors[item.name]}
+                isTouched={formik.touched[item.name]}
               />
             </div>
           </FieldWrapper>
@@ -116,9 +133,17 @@ export const Canvas = () => {
                 </span>
               </p>
               <input
+                value={formik.values[item.name]}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
                 placeholder={item.placeholder}
                 type={item.type}
+                name={item.name}
                 className="p-2 w-full text-sm text-gray-600 border rounded-md "
+              />
+              <Error
+                error={formik.errors[item.name]}
+                isTouched={formik.touched[item.name]}
               />
             </div>
           </FieldWrapper>
@@ -135,9 +160,17 @@ export const Canvas = () => {
                 </span>
               </p>
               <input
+                value={formik.values[item.name]}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
                 placeholder={item.placeholder}
                 type={item.type}
+                name={item.name}
                 className="p-2 w-full text-sm text-gray-600 border rounded-md "
+              />
+              <Error
+                error={formik.errors[item.name]}
+                isTouched={formik.touched[item.name]}
               />
             </div>
           </FieldWrapper>
@@ -154,9 +187,17 @@ export const Canvas = () => {
                 </span>
               </p>
               <input
+                value={formik.values[item.name]}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                name={item.name}
                 placeholder={item.placeholder}
                 type={item.type}
                 className="p-2 w-full text-sm text-gray-600 border rounded-md "
+              />
+              <Error
+                error={formik.errors[item.name]}
+                isTouched={formik.touched[item.name]}
               />
             </div>
           </FieldWrapper>
@@ -173,9 +214,17 @@ export const Canvas = () => {
                 </span>
               </p>
               <input
+                value={formik.values[item.name]}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                name={item.name}
                 placeholder={item.placeholder}
                 type={item.type}
                 className="p-2 w-full text-sm text-gray-600 border rounded-md "
+              />
+              <Error
+                error={formik.errors[item.name]}
+                isTouched={formik.touched[item.name]}
               />
             </div>
           </FieldWrapper>
@@ -192,9 +241,17 @@ export const Canvas = () => {
                 </span>
               </p>
               <input
+                value={formik.values[item.name]}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                name={item.name}
                 placeholder={item.placeholder}
                 type={item.type}
                 className="p-2 w-full text-sm text-gray-600 border rounded-md "
+              />
+              <Error
+                error={formik.errors[item.name]}
+                isTouched={formik.touched[item.name]}
               />
             </div>
           </FieldWrapper>
@@ -213,6 +270,14 @@ export const Canvas = () => {
               <textarea
                 className="border w-full text-gray-600 rounded-md p-2"
                 rows={3}
+                value={formik.values[item.name]}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                name={item.name}
+              />
+              <Error
+                error={formik.errors[item.name]}
+                isTouched={formik.touched[item.name]}
               />
             </div>
           </FieldWrapper>
@@ -229,9 +294,17 @@ export const Canvas = () => {
                 </span>
               </p>
               <input
+                value={formik.values[item.name]}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                name={item.name}
                 placeholder={item.placeholder}
                 type={item.type}
                 className="p-2 w-full text-sm text-gray-600 border rounded-md "
+              />
+              <Error
+                error={formik.errors[item.name]}
+                isTouched={formik.touched[item.name]}
               />
             </div>
           </FieldWrapper>
@@ -248,9 +321,17 @@ export const Canvas = () => {
                 </span>
               </p>
               <input
+                value={formik.values[item.name]}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                name={item.name}
                 placeholder={item.placeholder}
                 type={item.type}
                 className="p-2 w-full text-sm text-gray-600 border rounded-md "
+              />
+              <Error
+                error={formik.errors[item.name]}
+                isTouched={formik.touched[item.name]}
               />
             </div>
           </FieldWrapper>
@@ -267,9 +348,41 @@ export const Canvas = () => {
                 </span>
               </p>
               <input
+                value={formik.values[item.name]}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                name={item.name}
                 placeholder={item.placeholder}
                 type={item.type}
                 className="p-2 w-full text-sm text-gray-600 border rounded-md "
+              />
+              <Error
+                error={formik.errors[item.name]}
+                isTouched={formik.touched[item.name]}
+              />
+            </div>
+          </FieldWrapper>
+        );
+        break;
+      case "dropdown":
+        element = (
+          <FieldWrapper id={item.id}>
+            <div className="w-full">
+              <p className="text-sm text-gray-600">
+                {item.label}{" "}
+                <span className="text-red-500">
+                  {item.validations?.required ? "*" : ""}
+                </span>
+              </p>
+              <select className="border p-2 text-xs rounded-md w-full">
+                <option value={""}>{item.placeholder}</option>
+                {item.options?.map((option) => (
+                  <option value={option.value}>{option.label}</option>
+                ))}
+              </select>
+              <Error
+                error={formik.errors[item.name]}
+                isTouched={formik.touched[item.name]}
               />
             </div>
           </FieldWrapper>
@@ -443,8 +556,14 @@ export const Error = ({
   isTouched,
   error,
 }: {
-  isTouched: boolean;
+  isTouched: boolean | undefined;
   error: string | undefined;
 }) => {
-  return <>{isTouched && error ? <p className="text-red-500 text-xs">{error}</p> : null}</>;
+  return (
+    <>
+      {isTouched && error ? (
+        <p className="text-red-500 text-xs">{error}</p>
+      ) : null}
+    </>
+  );
 };

@@ -98,7 +98,7 @@ export function generateSchemaForField(field: FormField) {
   switch (type) {
     case "text":
     case "password":
-    case "select":
+    case "dropdown":
     case "radio":
       schema = yup.string();
       break;
@@ -117,6 +117,7 @@ export function generateSchemaForField(field: FormField) {
     default:
       schema = yup.string();
   }
+  console.log('validations', validations)
 
   if (validations.required) {
     schema = schema.required(`${label} is required`);
@@ -139,24 +140,26 @@ export function generateSchemaForField(field: FormField) {
 
   if (validations.maxLength) {
     if (type === "number") {
-      schema = (schema as yup.NumberSchema).min(
+      schema = (schema as yup.NumberSchema).max(
         validations.maxLength,
         `${label} must be atmost ${validations.maxLength}`
       );
     }
     if (type === "text") {
-      schema = (schema as yup.StringSchema).min(
+      schema = (schema as yup.StringSchema).max(
         validations.maxLength,
         `${label} must be atmost ${validations.maxLength} characters long`
       );
     }
-    if (validations.pattern) {
-      schema = (schema as yup.StringSchema).matches(
-        validations.pattern as RegExp,
-        `${label} is invalid`
-      );
-    }
   }
+  if (validations.pattern) {
+    console.log('pattern')
+    schema = (schema as yup.StringSchema).matches(
+      validations.pattern as RegExp,
+      `${label} is invalid`
+    );
+  }
+
 
   return schema;
 }

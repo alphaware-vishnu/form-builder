@@ -4,7 +4,7 @@ export type FieldType =
   | "text"
   | "email"
   | "number"
-  | "select"
+  | "dropdown"
   | "radio"
   | "checkbox"
   | "date"
@@ -29,5 +29,10 @@ export type FormField = {
     operator: "equals" | "not_equals";
     value: any;
   }[];
-  options?: string[];
+  options?: Option[];
+};
+
+type Option = {
+  label: string;
+  value: string;
 };
