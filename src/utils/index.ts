@@ -117,7 +117,6 @@ export function generateSchemaForField(field: FormField) {
     default:
       schema = yup.string();
   }
-  console.log('validations', validations)
 
   if (validations.required) {
     schema = schema.required(`${label} is required`);
@@ -153,7 +152,6 @@ export function generateSchemaForField(field: FormField) {
     }
   }
   if (validations.pattern) {
-    console.log('pattern')
     schema = (schema as yup.StringSchema).matches(
       validations.pattern as RegExp,
       `${label} is invalid`

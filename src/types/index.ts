@@ -32,7 +32,8 @@ export type FormField = {
   options?: Option[];
 };
 
-type Option = {
+export type Option = {
+  id: string,
   label: string;
   value: string;
 };

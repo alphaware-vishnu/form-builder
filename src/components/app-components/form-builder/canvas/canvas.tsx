@@ -30,15 +30,14 @@ export const Canvas = () => {
     formBuilderContext?.formFields
   );
 
-  console.log(validationSchema, "validation schema");
   const formik = useFormik<Record<string, string>>({
     initialValues: {},
     validationSchema,
     onSubmit: (values) => {},
   });
+
   console.log("formik.errors", formik.errors);
   const renderItem = (item: FormField) => {
-    console.log("item", item);
     let element;
     switch (item.uid) {
       case "singleline":
@@ -374,12 +373,36 @@ export const Canvas = () => {
                   {item.validations?.required ? "*" : ""}
                 </span>
               </p>
-              <select className="border p-2 text-xs rounded-md w-full">
+              <select
+                name={item.name}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                className="border p-2 text-xs rounded-md w-full"
+              >
                 <option value={""}>{item.placeholder}</option>
                 {item.options?.map((option) => (
                   <option value={option.value}>{option.label}</option>
                 ))}
               </select>
+              <Error
+                error={formik.errors[item.name]}
+                isTouched={formik.touched[item.name]}
+              />
+            </div>
+          </FieldWrapper>
+        );
+        break;
+      case "checkbox":
+        element = (
+          <FieldWrapper id={item.id}>
+            <div className="w-full">
+              <p className="text-sm text-gray-600">
+                {item.label}{" "}
+                <span className="text-red-500">
+                  {item.validations?.required ? "*" : ""}
+                </span>
+              </p>
+                <input type={"checkbox"} />
               <Error
                 error={formik.errors[item.name]}
                 isTouched={formik.touched[item.name]}
