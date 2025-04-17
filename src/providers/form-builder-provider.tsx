@@ -27,7 +27,8 @@ export const FormBuilderProvider = ({ children }: PropsWithChildren) => {
             label: fieldData.label,
             placeholder: fieldData.placeholder,
             validations: fieldData.validations,
-            options: fieldData.options
+            options: fieldData.options,
+            orientation: fieldData.orientation
           }
         : field;
     });

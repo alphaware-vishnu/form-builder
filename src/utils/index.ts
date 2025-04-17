@@ -9,6 +9,7 @@ import {
   Hash,
   LetterText,
   List,
+  ListCheck,
   ListTodo,
   MailPlus,
   PhoneCall,
@@ -28,6 +29,9 @@ export function iconRenderer(element: {
   switch (element.iconType || element.type) {
     case "text":
       icon = LetterText;
+      break;
+    case "checkbox-group":
+      icon = ListCheck;
       break;
     case "first-name":
       icon = CircleUser;
@@ -157,7 +161,6 @@ export function generateSchemaForField(field: FormField) {
       `${label} is invalid`
     );
   }
-
 
   return schema;
 }

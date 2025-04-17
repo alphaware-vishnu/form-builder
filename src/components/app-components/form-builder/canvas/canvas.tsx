@@ -402,7 +402,81 @@ export const Canvas = () => {
                   {item.validations?.required ? "*" : ""}
                 </span>
               </p>
-                <input type={"checkbox"} />
+              <input type={"checkbox"} />
+              <Error
+                error={formik.errors[item.name]}
+                isTouched={formik.touched[item.name]}
+              />
+            </div>
+          </FieldWrapper>
+        );
+        break;
+      case "radio":
+        element = (
+          <FieldWrapper id={item.id}>
+            <div className="w-full">
+              <p className="text-sm text-gray-600">
+                {item.label}{" "}
+                <span className="text-red-500">
+                  {item.validations?.required ? "*" : ""}
+                </span>
+              </p>
+              <div
+                className={cn(
+                  item.orientation === "horizontal" ? "flex-wrap gap-2 " : "flex-col gap-0.5",
+                  "flex "
+                )}
+              >
+                {item.options?.map((option) => (
+                  <div className="flex items-center gap-2 grow-0 justify-between">
+                    <p className="text-xs text-gray-700">{option.label}</p>
+                    <input
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      type="radio"
+                      name={item.name}
+                      value={option.value}
+                    />
+                  </div>
+                ))}
+              </div>
+              <Error
+                error={formik.errors[item.name]}
+                isTouched={formik.touched[item.name]}
+              />
+            </div>
+          </FieldWrapper>
+        );
+        break;
+      case "checkbox-group":
+        element = (
+          <FieldWrapper id={item.id}>
+            <div className="w-full">
+              <p className="text-sm text-gray-600">
+                {item.label}{" "}
+                <span className="text-red-500">
+                  {item.validations?.required ? "*" : ""}
+                </span>
+              </p>
+              <div
+                className={cn(
+                  item.orientation === "horizontal" ? "flex-wrap gap-2" : "flex-col gap-0.5",
+                  "flex "
+                )}
+              >
+                {item.options?.map((option) => (
+                  <div className="flex items-center gap-x-1  justify-between">
+                    <p className="text-xs text-gray-700">{option.label}</p>
+                    <input
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      type="checkbox"
+                      // name={item.name}
+                      value={option.value}
+                    />
+                  </div>
+                ))}
+              </div>
               <Error
                 error={formik.errors[item.name]}
                 isTouched={formik.touched[item.name]}

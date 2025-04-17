@@ -30,6 +30,7 @@ export type FormField = {
     value: any;
   }[];
   options?: Option[];
+  orientation?: "horizontal" | "vertical"
 };
 
 export type Option = {

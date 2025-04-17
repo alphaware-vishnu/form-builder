@@ -74,6 +74,7 @@ export const formElements = [
       { uid: "checkbox", label: "Checkbox", type: "checkbox" },
       { uid: "switch", label: "Switch", type: "switch" },
       { uid: "dropdown", label: "Dropdown", type: "dropdown" },
+      { uid: "checkbox-group", label: "Chekbox list", type: "checkbox-group" },
     ],
   },
 ];
