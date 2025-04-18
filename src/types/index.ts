@@ -30,11 +30,22 @@ export type FormField = {
     value: any;
   }[];
   options?: Option[];
-  orientation?: "horizontal" | "vertical"
+  orientation?: "horizontal" | "vertical";
 };
 
 export type Option = {
-  id: string,
+  id: string;
   label: string;
   value: string;
 };
+
+export interface Step {
+  id: string;
+  title: string;
+  description?: string;
+  fields: FormField[];
+}
+
+export interface Form {
+  steps: Step[];
+}

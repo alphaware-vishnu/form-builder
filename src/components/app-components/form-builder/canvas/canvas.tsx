@@ -8,7 +8,7 @@ import { CSS } from "@dnd-kit/utilities";
 import {
   SortableContext,
   useSortable,
-  verticalListSortingStrategy,
+  // verticalListSortingStrategy,
   horizontalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import {
@@ -22,6 +22,7 @@ import {
 import { PropsWithChildren } from "react";
 import { useFormik } from "formik";
 import { generateValidationSchema } from "@/utils";
+import FallbackOption from "../../fallback-ui/fallback-options";
 
 export const Canvas = () => {
   const { setNodeRef, isOver } = useDroppable({ id: "canvas" });
@@ -33,7 +34,7 @@ export const Canvas = () => {
   const formik = useFormik<Record<string, string>>({
     initialValues: {},
     validationSchema,
-    onSubmit: (values) => {},
+    onSubmit: () => {},
   });
 
   console.log("formik.errors", formik.errors);
@@ -423,22 +424,32 @@ export const Canvas = () => {
               </p>
               <div
                 className={cn(
-                  item.orientation === "horizontal" ? "flex-wrap gap-2 " : "flex-col gap-0.5",
+                  item.orientation === "horizontal"
+                    ? "flex-wrap gap-2 "
+                    : "flex-col gap-0.5",
                   "flex "
                 )}
               >
-                {item.options?.map((option) => (
-                  <div className="flex items-center gap-2 grow-0 justify-between">
-                    <p className="text-xs text-gray-700">{option.label}</p>
-                    <input
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      type="radio"
-                      name={item.name}
-                      value={option.value}
-                    />
-                  </div>
-                ))}
+                {item.options?.length ? (
+                  item.options?.map((option) => (
+                    <div className="flex items-center gap-2 grow-0 justify-between">
+                      <p className="text-xs text-gray-700">{option.label}</p>
+                      <input
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        type="radio"
+                        name={item.name}
+                        value={option.value}
+                      />
+                    </div>
+                  ))
+                ) : (
+                  <FallbackOption
+                    openSettings={() => {
+                      formBuilderContext.selectField(item.id);
+                    }}
+                  />
+                )}
               </div>
               <Error
                 error={formik.errors[item.name]}
@@ -460,22 +471,32 @@ export const Canvas = () => {
               </p>
               <div
                 className={cn(
-                  item.orientation === "horizontal" ? "flex-wrap gap-2" : "flex-col gap-0.5",
+                  item.orientation === "horizontal"
+                    ? "flex-wrap gap-2"
+                    : "flex-col gap-0.5",
                   "flex "
                 )}
               >
-                {item.options?.map((option) => (
-                  <div className="flex items-center gap-x-1  justify-between">
-                    <p className="text-xs text-gray-700">{option.label}</p>
-                    <input
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      type="checkbox"
-                      // name={item.name}
-                      value={option.value}
-                    />
-                  </div>
-                ))}
+                {item.options?.length ? (
+                  item.options?.map((option) => (
+                    <div className="flex items-center gap-x-1  justify-between">
+                      <p className="text-xs text-gray-700">{option.label}</p>
+                      <input
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        type="checkbox"
+                        // name={item.name}
+                        value={option.value}
+                      />
+                    </div>
+                  ))
+                ) : (
+                  <FallbackOption
+                    openSettings={() => {
+                      formBuilderContext.selectField(item.id);
+                    }}
+                  />
+                )}
               </div>
               <Error
                 error={formik.errors[item.name]}

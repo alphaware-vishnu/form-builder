@@ -22,8 +22,8 @@ export const OptionBuilder = ({ field }: OptionBuilderProps) => {
   const handleAddOption = () => {
     const option: Option = {
       id: Date.now().toLocaleString(),
-      label: "",
-      value: "",
+      label: "option-label",
+      value: "option-value",
     };
     formBuilderContext.updateField(field?.id, {
       ...field,

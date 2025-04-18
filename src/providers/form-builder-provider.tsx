@@ -1,4 +1,4 @@
-import { FieldType, FormField } from "@/types";
+import { FieldType, Form, FormField, Step } from "@/types";
 import { DragEndEvent, DragStartEvent, UniqueIdentifier } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 
@@ -8,6 +8,17 @@ const FormBuilderContext = createContext<any>(null);
 
 export const FormBuilderProvider = ({ children }: PropsWithChildren) => {
   const [formBuilderState, setFormBuilderState] = useState({});
+  const [form, setForm] = useState<Form>({
+    steps: [
+      {
+        id: "default",
+        title: "Default Form",
+        description: "Add default form description",
+        fields: [],
+      },
+    ],
+  });
+  const [selectedStep, setSelectedStep] = useState<Step>();
   const [fields, setFields] = useState<UniqueIdentifier[]>([]);
   const [formFields, setFormFields] = useState<FormField[]>([]);
   const [activeId, setActiveId] = useState<any>();
@@ -28,7 +39,7 @@ export const FormBuilderProvider = ({ children }: PropsWithChildren) => {
             placeholder: fieldData.placeholder,
             validations: fieldData.validations,
             options: fieldData.options,
-            orientation: fieldData.orientation
+            orientation: fieldData.orientation,
           }
         : field;
     });
