@@ -2,6 +2,7 @@ import { ClipboardList, Layers, Search } from "lucide-react";
 import { FormElements } from "./form-elements";
 import { memo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { FormSteps } from "./form-steps";
 
 export const ElementsSidebarMemo = () => {
   return (
@@ -20,7 +21,9 @@ export const ElementsSidebarMemo = () => {
       <TabsContent className="w-full p-0 mt-3" value="elements">
         <FormElements />
       </TabsContent>
-      <TabsContent className="w-full p-0 mt-3" value="steps">Steps</TabsContent>
+      <TabsContent className="w-full p-0 mt-3" value="steps">
+        <FormSteps />
+      </TabsContent>
     </Tabs>
   );
 };

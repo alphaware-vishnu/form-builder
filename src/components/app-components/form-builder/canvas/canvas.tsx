@@ -637,8 +637,8 @@ const FieldWrapper = ({
             onClick={(e) => {
               e.preventDefault();
               formBuilderContext.removeField(id);
-              if (id === formBuilderContext?.selectedField.id) {
-                formBuilderContext?.setSelectedField(null);
+              if (id === formBuilderContext.selectedField?.id) {
+                formBuilderContext?.setSelectedField(undefined);
               }
             }}
             className="w-7 z-10 text-red-500 hover:bg-red-200 rounded-sm transition-all p-2  h-7 cursor-pointer"

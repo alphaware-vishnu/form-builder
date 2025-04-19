@@ -1,33 +1,27 @@
 import { useFormProvider } from "@/providers";
 import { FormField } from "@/types";
 import FallbackSection from "./fallback-section";
-import { CircleAlert, FireExtinguisher } from "lucide-react";
+import { CircleAlert } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { OptionBuilder } from "./option-builder";
-import { Button } from "@/components/ui/button";
-import { useState } from "react";
 import { cn } from "@/lib/utils";
 
 export const FieldSetting = () => {
   const formBuilderContext = useFormProvider();
-  const selectedField: FormField = formBuilderContext.selectedField;
-  const [orientation, setOrientation] = useState<"horizontal" | "vertical">(
-    "vertical"
-  );
-  const field: FormField = formBuilderContext.formFields.find(
+  const selectedField: FormField | undefined = formBuilderContext.selectedField;
+
+  const field: FormField | undefined = formBuilderContext.formFields.find(
     (item: FormField) => item.id === selectedField?.id
   );
 
-  if (!selectedField) {
+  if (!selectedField || !field) {
     return (
       <div className="flex items-center justify-center h-screen">
         <FallbackSection />
       </div>
     );
   }
-
-  console.log("field", field);
 
   return (
     <div className="space-y-5 my-3">
@@ -41,7 +35,7 @@ export const FieldSetting = () => {
           onChange={(e) => {
             formBuilderContext.updateField(selectedField?.id, {
               ...field,
-              label: e.target.value,
+              label: String(e.target.value),
             });
           }}
           className="p-2 border text-sm rounded-md w-full"
@@ -55,21 +49,23 @@ export const FieldSetting = () => {
           value={selectedField?.name}
         />
       </div>
-      {field.uid !== "checkbox" && field.uid !== "radio" && field.uid !== "checkbox-group" && (
-        <div className="space-y-1">
-          <p className="text-sm text-gray-700 ">Field placeholder</p>
-          <input
-            onChange={(e) => {
-              formBuilderContext.updateField(field?.id, {
-                ...field,
-                placeholder: e.target.value,
-              });
-            }}
-            className="p-2 border text-sm rounded-md w-full"
-            value={field?.placeholder || ""}
-          />
-        </div>
-      )}
+      {field.uid !== "checkbox" &&
+        field.uid !== "radio" &&
+        field.uid !== "checkbox-group" && (
+          <div className="space-y-1">
+            <p className="text-sm text-gray-700 ">Field placeholder</p>
+            <input
+              onChange={(e) => {
+                formBuilderContext.updateField(field?.id, {
+                  ...field,
+                  placeholder: e.target.value,
+                });
+              }}
+              className="p-2 border text-sm rounded-md w-full"
+              value={field?.placeholder || ""}
+            />
+          </div>
+        )}
 
       {(field.uid === "radio" || field.uid === "checkbox-group") && (
         <div className="flex items-center h-28 justify-between w-full">
@@ -170,7 +166,8 @@ export const FieldSetting = () => {
 
         {field.uid !== "dropdown" &&
           field.uid !== "checkbox" &&
-          field.uid !== "radio" && field.uid !== "checkbox-group" && (
+          field.uid !== "radio" &&
+          field.uid !== "checkbox-group" && (
             <div className="flex items-center gap-x-2">
               <div className="space-y-1">
                 <p className="text-sm text-gray-700 ">Min length</p>
@@ -180,7 +177,7 @@ export const FieldSetting = () => {
                       ...field,
                       validations: {
                         ...field.validations,
-                        minLength: e.target.value,
+                        minLength: Number(e.target.value),
                       },
                     });
                   }}
@@ -199,7 +196,7 @@ export const FieldSetting = () => {
                       ...field,
                       validations: {
                         ...field.validations,
-                        maxLength: e.target.value,
+                        maxLength: Number(e.target.value),
                       },
                     });
                   }}
@@ -213,7 +210,8 @@ export const FieldSetting = () => {
           )}
         {field.uid !== "dropdown" &&
           field.uid !== "checkbox" &&
-          field.uid !== "radio" && field.uid !== "checkbox-group" && (
+          field.uid !== "radio" &&
+          field.uid !== "checkbox-group" && (
             <div className="space-y-1">
               <p className="text-sm text-gray-700 ">Pattern</p>
               <select
@@ -254,7 +252,9 @@ export const FieldSetting = () => {
               </select>
             </div>
           )}
-        {(field.uid === "dropdown" || field.uid === "radio" || field.uid === "checkbox-group") && (
+        {(field.uid === "dropdown" ||
+          field.uid === "radio" ||
+          field.uid === "checkbox-group") && (
           <div className="flex flex-col gap-4">
             Options
             <OptionBuilder field={field} />

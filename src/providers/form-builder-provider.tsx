@@ -2,49 +2,142 @@ import { FieldType, Form, FormField, Step } from "@/types";
 import { DragEndEvent, DragStartEvent, UniqueIdentifier } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 
-import { createContext, PropsWithChildren, useContext, useState } from "react";
+import {
+  createContext,
+  Dispatch,
+  PropsWithChildren,
+  SetStateAction,
+  useContext,
+  useState,
+} from "react";
 import { nanoid } from "nanoid";
-const FormBuilderContext = createContext<any>(null);
+
+interface FormBuilderContext {
+  form: Form;
+  fields: string[];
+  addStep: () => void;
+  updateStep: (stepId: string, stepData: Step) => void;
+  removeStep: (stepId: string) => void;
+  setFields: Dispatch<React.SetStateAction<string[]>>;
+  handleDragEnd: (event: DragEndEvent) => void;
+  handleDragStart: (event: DragEndEvent) => void;
+  addField: (uid: UniqueIdentifier) => void;
+  activeId: any;
+  formFields: FormField[];
+  selectField: (id: string) => void;
+  selectedField: FormField | undefined;
+  setSelectedField: Dispatch<SetStateAction<FormField | undefined>>;
+  removeField: (id: string) => void;
+  updateField: (id: string, fieldData: FormField) => void;
+  selectStep: (stepId: string) => void;
+}
+
+const FormBuilderContext = createContext<FormBuilderContext>({
+  form: {
+    steps: [
+      {
+        id: "",
+        title: "",
+        description: "",
+        fields: [],
+      },
+    ],
+  },
+  fields: [],
+  addStep: () => {},
+  updateStep: () => {},
+  removeStep: () => {},
+  setFields: () => {},
+  handleDragEnd: () => {},
+  handleDragStart: () => {},
+  addField: () => {},
+  activeId: null,
+  formFields: [],
+  selectField: () => {},
+  selectedField: undefined,
+  setSelectedField: () => {},
+  removeField: () => {},
+  updateField: () => {},
+  selectStep: () => {},
+});
 
 export const FormBuilderProvider = ({ children }: PropsWithChildren) => {
-  const [formBuilderState, setFormBuilderState] = useState({});
   const [form, setForm] = useState<Form>({
     steps: [
       {
-        id: "default",
+        id: "default-step",
         title: "Default Form",
         description: "Add default form description",
         fields: [],
       },
     ],
   });
-  const [selectedStep, setSelectedStep] = useState<Step>();
+  const [selectedStepId, setSelectedStepId] = useState<string>("default-step");
   const [fields, setFields] = useState<UniqueIdentifier[]>([]);
-  const [formFields, setFormFields] = useState<FormField[]>([]);
+
+  const selectStep = (stepId: string) => {
+    setSelectedStepId(stepId);
+  };
+
+  const formFields =
+    form.steps.find((step) => step.id === selectedStepId)?.fields || [];
   const [activeId, setActiveId] = useState<any>();
   const [selectedField, setSelectedField] = useState<FormField>();
 
+  const addStep = () => {
+    const newStep: Step = {
+      id: nanoid(),
+      title: "Form title",
+      description: "Form description",
+      fields: [],
+    };
+    setForm((preval) => ({
+      ...preval,
+      steps: [...preval.steps, newStep],
+    }));
+  };
+
+  const removeStep = (stepId: string) => {
+    setForm((preval) => ({
+      ...preval,
+      steps: preval.steps.filter((step) => step.id !== stepId),
+    }));
+  };
+
+  const updateStep = (stepId: string, stepData: Step) => {
+    setForm((preval) => ({
+      ...preval,
+      steps: preval.steps.map((step) => (step.id === stepId ? stepData : step)),
+    }));
+  };
+
+  //here later find step based on name instead of find eg - object[key]
   const selectField = (id: string) => {
-    const field = formFields.find((field) => field.id === id);
+    const step = form.steps.find((step) => step.id === selectedStepId);
+    const field = step?.fields.find((field) => field.id === id);
     setSelectedField(field);
   };
 
   const updateField = (id: string, fieldData: FormField) => {
-    const updatedData = formFields.map((field) => {
-      return field.id === id
-        ? {
-            ...field,
-            name: fieldData.name,
-            label: fieldData.label,
-            placeholder: fieldData.placeholder,
-            validations: fieldData.validations,
-            options: fieldData.options,
-            orientation: fieldData.orientation,
-          }
-        : field;
-    });
+    const updatedForm: Form = {
+      ...form,
+      steps: form.steps.map((prevaStep) => {
+        if (prevaStep.id === selectedStepId) {
+          return {
+            ...prevaStep,
+            fields: prevaStep.fields.map((field) => {
+              if (field.id === id) {
+                return fieldData;
+              }
+              return field;
+            }),
+          };
+        }
+        return prevaStep;
+      }),
+    };
 
-    setFormFields(updatedData);
+    setForm(updatedForm);
   };
 
   const addField = (uid: UniqueIdentifier) => {
@@ -88,11 +181,32 @@ export const FormBuilderProvider = ({ children }: PropsWithChildren) => {
       },
       conditions: [],
     };
-    setFormFields((preval) => [...preval, baseField]);
+    setForm((preval) => {
+      return {
+        ...preval,
+        steps: preval.steps.map((prevStep) => {
+          if (prevStep.id === selectedStepId) {
+            return { ...prevStep, fields: [...prevStep.fields, baseField] };
+          }
+          return prevStep;
+        }),
+      };
+    });
   };
 
   const removeField = (id: string) => {
-    setFormFields((preval) => preval.filter((field) => field.id !== id));
+    setForm((preval) => ({
+      ...preval,
+      steps: preval.steps.map((prevStep) => {
+        if (prevStep.id === selectedStepId) {
+          return {
+            ...prevStep,
+            fields: prevStep.fields.filter((field) => field.id !== id),
+          };
+        }
+        return prevStep;
+      }),
+    }));
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -103,11 +217,26 @@ export const FormBuilderProvider = ({ children }: PropsWithChildren) => {
       addField(active.id);
     }
     if (active?.id !== over?.id) {
-      setFormFields((items) => {
-        const oldIndex = items.findIndex((items) => items.id === active.id);
-        const newIndex = items.findIndex((items) => items.id === over?.id);
-        return arrayMove(items, oldIndex, newIndex);
-      });
+      setForm((preval) => ({
+        ...preval,
+        steps: preval.steps.map((prevStep) => {
+          if (selectedStepId === prevStep.id) {
+            return {
+              ...prevStep,
+              fields: (function () {
+                const oldIndex = prevStep.fields.findIndex(
+                  (items) => items.id === active.id
+                );
+                const newIndex = prevStep.fields.findIndex(
+                  (items) => items.id === over?.id
+                );
+                return arrayMove(prevStep.fields, oldIndex, newIndex);
+              })(),
+            };
+          }
+          return prevStep;
+        }),
+      }));
     }
   };
 
@@ -116,9 +245,9 @@ export const FormBuilderProvider = ({ children }: PropsWithChildren) => {
   };
 
   const values = {
-    formBuilderState,
-    setFormBuilderState,
+    form,
     fields,
+    addStep,
     setFields,
     handleDragEnd,
     handleDragStart,
@@ -130,6 +259,9 @@ export const FormBuilderProvider = ({ children }: PropsWithChildren) => {
     setSelectedField,
     removeField,
     updateField,
+    updateStep,
+    removeStep,
+    selectStep
   };
 
   return <FormBuilderContext value={values}>{children}</FormBuilderContext>;
@@ -137,6 +269,5 @@ export const FormBuilderProvider = ({ children }: PropsWithChildren) => {
 
 export const useFormProvider = () => {
   const formBuilderContext = useContext(FormBuilderContext);
-
   return formBuilderContext;
 };
