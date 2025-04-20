@@ -14,13 +14,13 @@ import { nanoid } from "nanoid";
 
 interface FormBuilderContext {
   form: Form;
-  fields: string[];
+  fields: UniqueIdentifier[];
   addStep: () => void;
   updateStep: (stepId: string, stepData: Step) => void;
   removeStep: (stepId: string) => void;
-  setFields: Dispatch<React.SetStateAction<string[]>>;
+  setFields: Dispatch<React.SetStateAction<UniqueIdentifier[]>>;
   handleDragEnd: (event: DragEndEvent) => void;
-  handleDragStart: (event: DragEndEvent) => void;
+  handleDragStart: (event: DragStartEvent) => void;
   addField: (uid: UniqueIdentifier) => void;
   activeId: any;
   formFields: FormField[];
@@ -30,6 +30,7 @@ interface FormBuilderContext {
   removeField: (id: string) => void;
   updateField: (id: string, fieldData: FormField) => void;
   selectStep: (stepId: string) => void;
+  selectedStepId: string
 }
 
 const FormBuilderContext = createContext<FormBuilderContext>({
@@ -44,21 +45,22 @@ const FormBuilderContext = createContext<FormBuilderContext>({
     ],
   },
   fields: [],
-  addStep: () => {},
-  updateStep: () => {},
-  removeStep: () => {},
-  setFields: () => {},
-  handleDragEnd: () => {},
-  handleDragStart: () => {},
-  addField: () => {},
+  addStep: () => { },
+  updateStep: () => { },
+  removeStep: () => { },
+  setFields: () => { },
+  handleDragEnd: () => { },
+  handleDragStart: () => { },
+  addField: () => { },
   activeId: null,
   formFields: [],
-  selectField: () => {},
+  selectField: () => { },
   selectedField: undefined,
-  setSelectedField: () => {},
-  removeField: () => {},
-  updateField: () => {},
-  selectStep: () => {},
+  setSelectedField: () => { },
+  removeField: () => { },
+  updateField: () => { },
+  selectStep: () => { },
+  selectedStepId: ""
 });
 
 export const FormBuilderProvider = ({ children }: PropsWithChildren) => {
@@ -85,8 +87,9 @@ export const FormBuilderProvider = ({ children }: PropsWithChildren) => {
   const [selectedField, setSelectedField] = useState<FormField>();
 
   const addStep = () => {
+    const id = nanoid()
     const newStep: Step = {
-      id: nanoid(),
+      id,
       title: "Form title",
       description: "Form description",
       fields: [],
@@ -95,6 +98,7 @@ export const FormBuilderProvider = ({ children }: PropsWithChildren) => {
       ...preval,
       steps: [...preval.steps, newStep],
     }));
+    setSelectedStepId(id)
   };
 
   const removeStep = (stepId: string) => {
@@ -140,7 +144,7 @@ export const FormBuilderProvider = ({ children }: PropsWithChildren) => {
     setForm(updatedForm);
   };
 
-  const addField = (uid: UniqueIdentifier) => {
+  const addField = (uid: UniqueIdentifier | string) => {
     const id = nanoid();
     let type: FieldType;
 
@@ -153,7 +157,6 @@ export const FormBuilderProvider = ({ children }: PropsWithChildren) => {
         break;
       case "password":
         type = "password";
-        break;
         break;
       case "phone":
         type = "number";
@@ -172,9 +175,8 @@ export const FormBuilderProvider = ({ children }: PropsWithChildren) => {
       id,
       uid,
       type,
-      label: `${
-        uid.toString().charAt(0).toUpperCase() + uid.toString().slice(1)
-      } `,
+      label: `${uid.toString().charAt(0).toUpperCase() + uid.toString().slice(1)
+        } `,
       name: `${uid}_${id}`,
       validations: {
         required: false,
@@ -261,7 +263,8 @@ export const FormBuilderProvider = ({ children }: PropsWithChildren) => {
     updateField,
     updateStep,
     removeStep,
-    selectStep
+    selectStep,
+    selectedStepId
   };
 
   return <FormBuilderContext value={values}>{children}</FormBuilderContext>;

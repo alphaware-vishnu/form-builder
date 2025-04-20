@@ -19,7 +19,7 @@ import {
   Settings2,
   Trash,
 } from "lucide-react";
-import { PropsWithChildren } from "react";
+import { PropsWithChildren, useMemo } from "react";
 import { useFormik } from "formik";
 import { generateValidationSchema } from "@/utils";
 import FallbackOption from "../../fallback-ui/fallback-options";
@@ -34,10 +34,9 @@ export const Canvas = () => {
   const formik = useFormik<Record<string, string>>({
     initialValues: {},
     validationSchema,
-    onSubmit: () => {},
+    onSubmit: () => { },
   });
 
-  console.log("formik.errors", formik.errors);
   const renderItem = (item: FormField) => {
     let element;
     switch (item.uid) {
@@ -517,7 +516,12 @@ export const Canvas = () => {
     return element;
   };
 
-  formik.handleBlur;
+
+  const step = useMemo(() => {
+    return formBuilderContext.form.steps.find(step => step.id === formBuilderContext.selectedStepId)
+  }, [formBuilderContext.form])
+
+
 
   return (
     <div
@@ -525,6 +529,9 @@ export const Canvas = () => {
       ref={setNodeRef}
       className=" min-h-[80%] relative p-2 m-4 rounded-md"
     >
+      <div
+        className="absolute inset-0 -z-10 size-full bg-white bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]"
+      ></div>
       <div className="sticky z-50 flex items-center shadow justify-between gap-2 top-6 p-2 w-full rounded-md bg-white border">
         <Button
           className="cursor-pointer font-normal"
@@ -567,10 +574,30 @@ export const Canvas = () => {
       </div>
       <div className="space-y-2 p-0 mt-4">
         <input
+          onChange={(e) => {
+            //Not optimized as we have to search the entire form to find the step, on every keystroke
+            if (step) {
+              formBuilderContext.updateStep(formBuilderContext.selectedStepId, {
+                ...step,
+                title: e.target.value
+              })
+            }
+          }}
+          value={step?.title}
           className="border-none w-full block focus:outline-0  text-lg text-gray-800 font-medium"
           defaultValue={"Form title"}
         />
         <input
+          //Not optimized as we have to search the entire form to find the step, on every keystroke
+          onChange={(e) => {
+            if (step) {
+              formBuilderContext.updateStep(formBuilderContext.selectedStepId, {
+                ...step,
+                description: e.target.value
+              })
+            }
+          }}
+          value={step?.description}
           className="border-none w-full block focus:outline-0  text-sm text-gray-600 font-normal"
           defaultValue={"A short description about your form"}
         />
@@ -620,8 +647,10 @@ const FieldWrapper = ({
     <div
       ref={setNodeRef}
       style={style}
-      className={cn("w-full z-0  border rounded-sm mt-2 p-2", className)}
+      className={cn("w-full bg-white shadow relative z-0  border rounded-sm mt-2 p-2", className)}
     >
+
+
       <div className="flex items-center justify-between">
         <GripVertical
           {...attributes}
@@ -685,3 +714,5 @@ export const Error = ({
     </>
   );
 };
+
+
