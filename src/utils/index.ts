@@ -1,4 +1,4 @@
-import { FormField } from "@/types";
+import { FormField, OperatorType } from "@/types";
 import {
   BadgeCheck,
   Bird,
@@ -87,6 +87,32 @@ export function iconRenderer(element: {
   return icon;
 }
 
+export function conditionCheck(
+  operator: OperatorType,
+  conditionalValue: string,
+  fieldValue: string
+) {
+  switch (operator) {
+    case "equals":
+      return fieldValue === conditionalValue;
+    case "not_equals":
+      return fieldValue !== conditionalValue;
+    case "in":
+      return (
+        Array.isArray(conditionalValue) && conditionalValue.includes(fieldValue)
+      );
+    case "not_in":
+      return (
+        Array.isArray(conditionalValue) &&
+        !conditionalValue.includes(fieldValue)
+      );
+    case "contains":
+      return (
+        typeof fieldValue === "string" && fieldValue.includes(conditionalValue)
+      );
+  }
+}
+
 export function generateValidationSchema(fields: FormField[]) {
   const shape: Record<string, yup.AnySchema> = {};
   fields.forEach((field) => {
@@ -97,7 +123,7 @@ export function generateValidationSchema(fields: FormField[]) {
 }
 
 export function generateSchemaForField(field: FormField) {
-  const { type, label, validations = {} } = field;
+  const { type, label, validations = {}, conditions = [] } = field;
   let schema: yup.AnySchema;
   switch (type) {
     case "text":
@@ -159,6 +185,21 @@ export function generateSchemaForField(field: FormField) {
     schema = (schema as yup.StringSchema).matches(
       validations.pattern as RegExp,
       `${label} is invalid`
+    );
+  }
+
+  if (conditions?.length > 0 && conditions.every(cond=>cond.field !== "")) {
+    schema.when(
+      conditions.map((cond) => cond.field),
+      {
+        is: (...fieldvalues: any[]) => {
+          return conditions.every((cond, index) =>
+            conditionCheck(cond.operator, cond.value, fieldvalues[index])
+          );
+        },
+        then: (schema)=>schema.required('Field is required as per conditions'),
+        otherwise: (schema)=>schema.notRequired()
+      }
     );
   }
 

@@ -123,6 +123,10 @@
   @apply w-7 z-10 text-red-500 hover:bg-red-200 rounded-sm transition-all p-2  h-7 cursor-pointer
 }
 
+.select {
+  @apply border p-2 text-xs rounded-md w-full
+}
+
 .scrollbar-hide {
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE/Edge */

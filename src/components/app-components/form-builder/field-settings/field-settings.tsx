@@ -6,6 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { OptionBuilder } from "./option-builder";
 import { cn } from "@/lib/utils";
+import { FieldConditions } from "./field-conditons";
 
 export const FieldSetting = () => {
   const formBuilderContext = useFormProvider();
@@ -261,6 +262,8 @@ export const FieldSetting = () => {
           </div>
         )}
       </div>
+      <Separator orientation="horizontal" />
+      <FieldConditions field={field}/>
     </div>
   );
 };

@@ -1,15 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { useFormProvider } from "@/providers";
 import { FormField, Option } from "@/types";
-import {
-  ChevronDown,
-  FireExtinguisher,
-  GrabIcon,
-  GripVertical,
-  PlusCircle,
-  Trash,
-} from "lucide-react";
-import { MouseEventHandler, useState } from "react";
+import { ChevronDown, GripVertical, PlusCircle, Trash } from "lucide-react";
+import { useState } from "react";
 
 interface OptionBuilderProps {
   field: FormField;

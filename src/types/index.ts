@@ -11,6 +11,20 @@ export type FieldType =
   | "datetime-local"
   | "password";
 
+export type OperatorType =
+  | "equals"
+  | "not_equals"
+  | "contains"
+  | "in"
+  | "not_in";
+
+export interface Conditon {
+  id: string;
+  field: string;
+  operator: OperatorType;
+  value: any;
+}
+
 export type FormField = {
   id: string;
   uid: UniqueIdentifier;
@@ -24,11 +38,7 @@ export type FormField = {
     maxLength?: number;
     pattern?: any;
   };
-  conditions?: {
-    field: string;
-    operator: "equals" | "not_equals";
-    value: any;
-  }[];
+  conditions?: Conditon[];
   options?: Option[];
   orientation?: "horizontal" | "vertical";
 };

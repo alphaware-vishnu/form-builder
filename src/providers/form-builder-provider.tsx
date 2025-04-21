@@ -1,4 +1,4 @@
-import { FieldType, Form, FormField, Step } from "@/types";
+import { Conditon, FieldType, Form, FormField, Step } from "@/types";
 import { DragEndEvent, DragStartEvent, UniqueIdentifier } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 
@@ -30,7 +30,8 @@ interface FormBuilderContext {
   removeField: (id: string) => void;
   updateField: (id: string, fieldData: FormField) => void;
   selectStep: (stepId: string) => void;
-  selectedStepId: string
+  selectedStepId: string;
+  addCondtion: (name?: string) => void;
 }
 
 const FormBuilderContext = createContext<FormBuilderContext>({
@@ -45,22 +46,23 @@ const FormBuilderContext = createContext<FormBuilderContext>({
     ],
   },
   fields: [],
-  addStep: () => { },
-  updateStep: () => { },
-  removeStep: () => { },
-  setFields: () => { },
-  handleDragEnd: () => { },
-  handleDragStart: () => { },
-  addField: () => { },
+  addStep: () => {},
+  updateStep: () => {},
+  removeStep: () => {},
+  setFields: () => {},
+  handleDragEnd: () => {},
+  handleDragStart: () => {},
+  addField: () => {},
   activeId: null,
   formFields: [],
-  selectField: () => { },
+  selectField: () => {},
   selectedField: undefined,
-  setSelectedField: () => { },
-  removeField: () => { },
-  updateField: () => { },
-  selectStep: () => { },
-  selectedStepId: ""
+  setSelectedField: () => {},
+  removeField: () => {},
+  updateField: () => {},
+  selectStep: () => {},
+  selectedStepId: "",
+  addCondtion: () => {},
 });
 
 export const FormBuilderProvider = ({ children }: PropsWithChildren) => {
@@ -77,6 +79,38 @@ export const FormBuilderProvider = ({ children }: PropsWithChildren) => {
   const [selectedStepId, setSelectedStepId] = useState<string>("default-step");
   const [fields, setFields] = useState<UniqueIdentifier[]>([]);
 
+  //conditons-functions
+
+  const addCondtion = (name?: string) => {
+    const id = nanoid();
+    const baseConditon: Conditon = {
+      id,
+      operator: "equals",
+      field: name ||  "" ,
+      value: "",
+    };
+    setForm((preval) => ({
+      ...preval,
+      steps: preval.steps.map((step) => {
+        if (step.id === selectedStepId) {
+          return {
+            ...step,
+            fields: step.fields.map((field) => {
+              if (selectedField?.id === field.id) {
+                return {
+                  ...field,
+                  conditions: [...(field.conditions || []), baseConditon],
+                };
+              }
+              return field;
+            }),
+          };
+        }
+        return step;
+      }),
+    }));
+  };
+
   const selectStep = (stepId: string) => {
     setSelectedStepId(stepId);
   };
@@ -87,7 +121,7 @@ export const FormBuilderProvider = ({ children }: PropsWithChildren) => {
   const [selectedField, setSelectedField] = useState<FormField>();
 
   const addStep = () => {
-    const id = nanoid()
+    const id = nanoid();
     const newStep: Step = {
       id,
       title: "Form title",
@@ -98,7 +132,7 @@ export const FormBuilderProvider = ({ children }: PropsWithChildren) => {
       ...preval,
       steps: [...preval.steps, newStep],
     }));
-    setSelectedStepId(id)
+    setSelectedStepId(id);
   };
 
   const removeStep = (stepId: string) => {
@@ -175,8 +209,9 @@ export const FormBuilderProvider = ({ children }: PropsWithChildren) => {
       id,
       uid,
       type,
-      label: `${uid.toString().charAt(0).toUpperCase() + uid.toString().slice(1)
-        } `,
+      label: `${
+        uid.toString().charAt(0).toUpperCase() + uid.toString().slice(1)
+      } `,
       name: `${uid}_${id}`,
       validations: {
         required: false,
@@ -264,7 +299,8 @@ export const FormBuilderProvider = ({ children }: PropsWithChildren) => {
     updateStep,
     removeStep,
     selectStep,
-    selectedStepId
+    selectedStepId,
+    addCondtion,
   };
 
   return <FormBuilderContext value={values}>{children}</FormBuilderContext>;
