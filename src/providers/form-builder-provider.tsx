@@ -32,6 +32,8 @@ interface FormBuilderContext {
   selectStep: (stepId: string) => void;
   selectedStepId: string;
   addCondtion: (name?: string) => void;
+  removeCondition: (conditonId: string) => void,
+  updateCondition: (conditionId: string, conditionData: Conditon) => void
 }
 
 const FormBuilderContext = createContext<FormBuilderContext>({
@@ -46,23 +48,25 @@ const FormBuilderContext = createContext<FormBuilderContext>({
     ],
   },
   fields: [],
-  addStep: () => {},
-  updateStep: () => {},
-  removeStep: () => {},
-  setFields: () => {},
-  handleDragEnd: () => {},
-  handleDragStart: () => {},
-  addField: () => {},
+  addStep: () => { },
+  updateStep: () => { },
+  removeStep: () => { },
+  setFields: () => { },
+  handleDragEnd: () => { },
+  handleDragStart: () => { },
+  addField: () => { },
   activeId: null,
   formFields: [],
-  selectField: () => {},
+  selectField: () => { },
   selectedField: undefined,
-  setSelectedField: () => {},
-  removeField: () => {},
-  updateField: () => {},
-  selectStep: () => {},
+  setSelectedField: () => { },
+  removeField: () => { },
+  updateField: () => { },
+  selectStep: () => { },
   selectedStepId: "",
-  addCondtion: () => {},
+  addCondtion: () => { },
+  removeCondition: () => { },
+  updateCondition: () => { }
 });
 
 export const FormBuilderProvider = ({ children }: PropsWithChildren) => {
@@ -86,7 +90,7 @@ export const FormBuilderProvider = ({ children }: PropsWithChildren) => {
     const baseConditon: Conditon = {
       id,
       operator: "equals",
-      field: name ||  "" ,
+      field: name || "",
       value: "",
     };
     setForm((preval) => ({
@@ -110,6 +114,57 @@ export const FormBuilderProvider = ({ children }: PropsWithChildren) => {
       }),
     }));
   };
+
+  const removeCondition = (conditionId: string) => {
+    setForm((preval) => ({
+      ...preval,
+      steps: preval.steps.map((step) => {
+        if (step.id === selectedStepId) {
+          return {
+            ...step,
+            fields: step.fields.map((field) => {
+              if (selectedField?.id === field.id) {
+                return {
+                  ...field,
+                  conditions: [...(field.conditions || []).filter(cond => cond.id !== conditionId)],
+                };
+              }
+              return field;
+            }),
+          };
+        }
+        return step;
+      }),
+    }));
+  }
+
+  const updateCondition = (conditionId: string, conditionData: Conditon) => {
+    setForm(preval => ({
+      ...preval,
+      steps: preval.steps.map(step => {
+        if (step.id === selectedStepId) {
+          return {
+            ...step,
+            fields: step.fields.map(field => {
+              if (field.id === selectedField?.id) {
+                return {
+                  ...field,
+                  conditions: field.conditions?.map(condition => {
+                    if (condition.id === conditionId) {
+                      return conditionData
+                    }
+                    return condition
+                  })
+                }
+              }
+              return field
+            })
+          }
+        }
+        return step
+      })
+    }))
+  }
 
   const selectStep = (stepId: string) => {
     setSelectedStepId(stepId);
@@ -209,9 +264,8 @@ export const FormBuilderProvider = ({ children }: PropsWithChildren) => {
       id,
       uid,
       type,
-      label: `${
-        uid.toString().charAt(0).toUpperCase() + uid.toString().slice(1)
-      } `,
+      label: `${uid.toString().charAt(0).toUpperCase() + uid.toString().slice(1)
+        } `,
       name: `${uid}_${id}`,
       validations: {
         required: false,
@@ -301,6 +355,8 @@ export const FormBuilderProvider = ({ children }: PropsWithChildren) => {
     selectStep,
     selectedStepId,
     addCondtion,
+    removeCondition,
+    updateCondition
   };
 
   return <FormBuilderContext value={values}>{children}</FormBuilderContext>;

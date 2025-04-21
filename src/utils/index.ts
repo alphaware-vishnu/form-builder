@@ -187,20 +187,19 @@ export function generateSchemaForField(field: FormField) {
       `${label} is invalid`
     );
   }
+  if (conditions?.length > 0 && conditions.every((cond) => cond.field !== "")) {
+    const fieldNames = conditions.map((cond) => cond.field);
 
-  if (conditions?.length > 0 && conditions.every(cond=>cond.field !== "")) {
-    schema.when(
-      conditions.map((cond) => cond.field),
-      {
-        is: (...fieldvalues: any[]) => {
-          return conditions.every((cond, index) =>
-            conditionCheck(cond.operator, cond.value, fieldvalues[index])
-          );
-        },
-        then: (schema)=>schema.required('Field is required as per conditions'),
-        otherwise: (schema)=>schema.notRequired()
-      }
-    );
+    schema = schema.when(fieldNames, (fieldValues: any[], schema) => {
+      const allConditionsMet = conditions.every((cond, index) => {
+        const currentFieldValue = fieldValues[index];
+        return conditionCheck(cond.operator, cond.value, currentFieldValue);
+      });
+
+      return allConditionsMet
+        ? schema.required("Field is required as per conditions")
+        : schema.notRequired();
+    });
   }
 
   return schema;
